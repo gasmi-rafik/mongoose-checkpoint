@@ -1,0 +1,97 @@
+let mongoose = require('mongoose');
+const server = '127.0.0.1:27017'; // REPLACE WITH YOUR DB SERVER
+const database = 'myDB';      // REPLACE WITH YOUR DB NAME
+class Database {
+  constructor() {
+    this._connect()
+  }
+_connect() {
+     mongoose.connect(`mongodb://${server}/${database}`)
+       .then(() => {
+         console.log('Database connection successful')
+       })
+       .catch(err => {
+         console.error('Database connection error')
+       })
+  }
+}
+module.exports = new Database()
+
+
+****************************************************************************
+
+
+let EmailModel = require('./email')
+let msg = new EmailModel({
+  email: 'ada.lovelace@gmail.com'
+})
+Let’s enhance the Email schema to make the email property a unique, required field and convert the value to lowercase before saving it. We can also add a validation function that will ensure that the value is a valid email address. We will reference and use the validator library installed earlier.
+
+let mongoose = require('mongoose')
+let validator = require('validator')
+let emailSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    validate: (value) => {
+      return validator.isEmail(value)
+    }
+  }
+})
+module.exports = mongoose.model('Email', emailSchema)
+
+************************************************************************************
+
+let EmailModel = require('./email')
+let msg = new EmailModel({
+  email: 'ADA.LOVELACE@GMAIL.COM'
+})
+msg.save()
+   .then(doc => {
+     console.log(doc)
+   })
+   .catch(err => {
+     console.error(err)
+   })
+The result is a document that is returned upon a successful save:
+
+{ 
+  _id: 5a78fe3e2f44ba8f85a2409a,
+  email: 'ada.lovelace@gmail.com',
+  __v: 0 
+}
+
+
+*************************************************************************************
+
+EmailModel
+  .findOneAndUpdate(
+    {
+      email: 'ada.lovelace@gmail.com'  // search query
+    }, 
+    {
+      email: 'theoutlander@live.com'   // field:values to update
+    },
+    {
+      new: true,                       // return updated doc
+      runValidators: true              // validate before update
+    })
+  .then(doc => {
+    console.log(doc)
+  })
+  .catch(err => {
+    console.error(err)
+  })
+The document returned will contain the updated email:
+
+{ 
+  _id: 5a78fe3e2f44ba8f85a2409a,
+  email: 'theoutlander@live.com',
+  __v: 0 
+}
+
+
+***************************************************************************************
+
